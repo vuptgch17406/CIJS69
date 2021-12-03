@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./index.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyCr3Hl-qpJAtgw7F5nAtEj9Lr294LyUduM",
+        authDomain: "hn-cijs69-64932.firebaseapp.com",
+        projectId: "hn-cijs69-64932",
+        storageBucket: "hn-cijs69-64932.appspot.com",
+        messagingSenderId: "586829603032",
+        appId: "1:586829603032:web:228740e26987fe58fab7ad",
+      };
+
+      initializeApp(firebaseConfig);
+    </script>
+    <script src="./index.js" type="module"></script>
+  </body>
+</html>
