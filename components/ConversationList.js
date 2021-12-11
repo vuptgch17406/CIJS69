@@ -1,3 +1,11 @@
+import {
+  query,
+  where,
+  onSnapshot,
+} from "https://www.gstatic.com/firebasejs/9.5.0/firebase-firestore.js";
+
+import { auth, conversationsRef } from "../constants/index.js";
+
 import ConversationItem from "./ConversationItem.js";
 import CreateNewConversationModal from "./CreateNewConversationModal.js";
 
@@ -5,10 +13,21 @@ export default class ConversationList {
   $conversationItem;
   $newConversationButton;
   $createConversationModal;
+  $conversationListContainer;
+  $conversationListContent;
 
-  constructor() {
-    this.$conversationItem = new ConversationItem();
+  _onChangeActiveConversation;
+
+  constructor(onChangeActiveConversation) {
+    this._onChangeActiveConversation = onChangeActiveConversation;
     this.$createConversationModal = new CreateNewConversationModal();
+    this.$conversationListContainer = document.createElement("div");
+    this.$conversationListContainer.setAttribute(
+      "class",
+      "w-1/4 h-full py-4 px-8 bg-blue-400"
+    );
+
+    this.$conversationListContent = document.createElement("div");
 
     this.$newConversationButton = document.createElement("button");
     this.$newConversationButton.textContent = "New conversation";
@@ -19,20 +38,54 @@ export default class ConversationList {
     this.$newConversationButton.addEventListener("click", () => {
       this.$createConversationModal.opentModal();
     });
+
+    this.setupConversationListener();
+  }
+
+  async setupConversationListener() {
+    // const docs = await getDocs(conversationsRef);
+    // docs.forEach((doc) => {
+    //   const conversationData = doc.data();
+    //   const conversationItem = new ConversationItem(conversationData);
+    //   conversationItem.render(this.$conversationListContainer);
+    // });
+
+    // getDocs(conversationsRef).then((docs) => {
+    //   docs.forEach((doc) => {
+    //     const conversationData = doc.data();
+    //     const conversationItem = new ConversationItem(conversationData);
+    //     conversationItem.render(this.$conversationListContainer);
+    //   });
+    // });
+    this.$conversationListContent.innerHTML = "";
+    const q = query(
+      conversationsRef,
+      where("users", "array-contains", auth.currentUser.email)
+    );
+
+    onSnapshot(q, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "added") {
+          const conversationItem = new ConversationItem(
+            {
+              ...change.doc.data(),
+              conversationId: change.doc.id,
+            },
+            (conversation) => {
+              this._onChangeActiveConversation(conversation);
+            }
+          );
+          conversationItem.render(this.$conversationListContent);
+        }
+      });
+    });
   }
 
   render(mainContainer) {
-    const conversationListContainer = document.createElement("div");
-    conversationListContainer.setAttribute(
-      "class",
-      "w-1/4 h-full py-4 px-8 bg-blue-400"
-    );
+    this.$conversationListContainer.appendChild(this.$newConversationButton);
+    this.$conversationListContainer.appendChild(this.$conversationListContent);
+    this.$createConversationModal.render(this.$conversationListContainer);
 
-    conversationListContainer.appendChild(this.$newConversationButton);
-    conversationListContainer.app;
-    this.$createConversationModal.render(conversationListContainer);
-
-    this.$conversationItem.render(conversationListContainer);
-    mainContainer.appendChild(conversationListContainer);
+    mainContainer.appendChild(this.$conversationListContainer);
   }
 }

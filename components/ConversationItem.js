@@ -1,10 +1,29 @@
 export default class ConversationItem {
-  constructor() {}
+  conversation;
+  $conversationItemContainer;
+
+  _onChange;
+  constructor(conversationData, onChange) {
+    this._onChange = onChange;
+    this.conversation = conversationData;
+    this.$conversationItemContainer = document.createElement("div");
+    this.$conversationItemContainer.setAttribute(
+      "class",
+      "bg-white py-2 px-4 rounded-full my-4 font-bold hover:bg-pink-400 cursor-pointer hover:text-white"
+    );
+
+    this.$conversationItemContainer.addEventListener("click", () => {
+      this._onChange(this.conversation);
+    });
+  }
 
   render(conversationsContainer) {
-    const test = document.createElement("h2");
-    test.textContent = "consersationsItem";
+    const conversationName = document.createElement("h2");
+    conversationName.textContent = this.conversation.name;
+    conversationName.setAttribute("class", "font-bold");
 
-    conversationsContainer.appendChild(test);
+    this.$conversationItemContainer.appendChild(conversationName);
+
+    conversationsContainer.appendChild(this.$conversationItemContainer);
   }
 }
